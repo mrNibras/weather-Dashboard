@@ -60,7 +60,7 @@ const Forecast = ({ hourly, daily }) => {
               {/* The 'pop' property might not be available in this structure, so we can hide it for now */}
                 <p className="w-1/4 text-center"></p>
               <p className="w-1/4 text-right">
-                <span className="font-bold">{Math.round(day.temp_max)}°</span> / <span>{Math.round(day.temp_min)}°</span>
+                <span className="font-bold">{Math.round(day.temp.max)}°</span> / <span>{Math.round(day.temp.min)}°</span>
               </p>
             </div>
           ))}

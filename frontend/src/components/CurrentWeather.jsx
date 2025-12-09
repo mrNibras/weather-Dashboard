@@ -25,7 +25,7 @@ const CurrentWeather = ({ data }) => {
         {/* Animated Icon */}
         <div className="absolute z-20">
           <img
-            src={`http://openweathermap.org/img/wn/${weatherInfo.icon}@4x.png`}
+            src={`https://openweathermap.org/img/wn/${weatherInfo.icon}@4x.png`}
             alt={weatherInfo.description}
             className="w-32 h-32 drop-shadow-lg"
           />
