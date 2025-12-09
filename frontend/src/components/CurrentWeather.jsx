@@ -2,14 +2,13 @@ import React from 'react';
 
 const CurrentWeather = ({ data }) => {
   // Guard clause to ensure all necessary data is present before rendering
-  if (!data || !data.current) return null;
+  if (!data || !data.weather) return null;
 
   // Correctly destructure nested properties from the API response
-  const { main, wind, sys, weather, coord } = data.current;
+  const { name, main, wind, sys, weather } = data;
   const { temp, humidity } = main;
   const { speed: wind_speed } = wind;
   const { sunrise, sunset } = sys;
-  const { name, country } = data;
   const weatherInfo = weather[0];
 
   const formatTime = (timestamp) => new Date(timestamp * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -17,7 +16,7 @@ const CurrentWeather = ({ data }) => {
   return (
     <section className="relative flex flex-col items-center justify-center p-6 bg-black/10 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
       <div className="text-center mb-4">
-        <h2 className="text-4xl font-bold tracking-wide">{name}, {country}</h2>
+        <h2 className="text-4xl font-bold tracking-wide">{name}, {sys.country}</h2>
         <p className="text-lg text-white/70 capitalize">{weatherInfo.description}</p>
       </div>
 
