@@ -24,6 +24,7 @@ function App() {
             const dataByCoords = await getWeatherDataByCoords(latitude, longitude);
             setWeatherData(dataByCoords);
           } catch (err) {
+            console.error("Geolocation fetch error:", err);
             setError('Could not fetch weather for your location.');
           } finally {
             setLoading(false);
@@ -31,6 +32,7 @@ function App() {
         },
         () => {
           setError('Location access denied. Search for a city manually.');
+          console.warn("Geolocation access denied by user.");
           setLoading(false);
         }
       );
@@ -67,6 +69,7 @@ function App() {
         setRecentCities(updatedRecent);
       }
     } catch (err) {
+      console.error("Search fetch error:", err);
       setError(err.response?.data?.message || 'An error occurred.');
     } finally {
       setLoading(false);
@@ -79,9 +82,11 @@ function App() {
 
   // Function to determine the background style based on weather
   const getBackgroundStyle = () => {
-    if (!weatherData) return 'from-slate-800 to-gray-900'; // Default background
-    const weatherCondition = weatherData.weather[0].main;
-    const isNight = weatherData.dt > weatherData.sys.sunset || weatherData.dt < weatherData.sys.sunrise;
+    if (!weatherData || !weatherData.weather || weatherData.weather.length === 0 || !weatherData.sys || !weatherData.sys.sunset || !weatherData.sys.sunrise || !weatherData.dt) {
+      return 'from-slate-800 to-gray-900'; // Default background if data is incomplete
+    }
+    const weatherCondition = weatherData.weather[0].main; // This is safe now
+    const isNight = weatherData.dt > weatherData.sys.sunset || weatherData.dt < weatherData.sys.sunrise; // These are safe now
 
     if (isNight) return 'from-indigo-900 via-slate-900 to-gray-900';
 
