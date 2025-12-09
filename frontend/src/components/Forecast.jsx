@@ -1,26 +1,12 @@
 import React from 'react';
 
-// Helper function to derive a 5-day forecast from the 3-hour forecast list.
-// It groups items by day and finds the min/max temps.
-const getDailyForecast = (list) => {
-  const dailyData = {};
-  list.forEach(item => {
-    const date = new Date(item.dt * 1000).toLocaleDateString();
-    if (!dailyData[date]) {
-      dailyData[date] = { temp_min: item.main.temp_min, temp_max: item.main.temp_max, weather: item.weather[0], dt: item.dt };
-    } else {
-      dailyData[date].temp_min = Math.min(dailyData[date].temp_min, item.main.temp_min);
-      dailyData[date].temp_max = Math.max(dailyData[date].temp_max, item.main.temp_max);
-    }
-  });
-  return Object.values(dailyData).slice(0, 5);
-};
-
 const Forecast = ({ hourly, daily }) => {
   // Guard clause to ensure forecast arrays exist before trying to map over them
   if (!hourly || !daily) return null;
 
-  const dailyForecast = getDailyForecast(daily);
+  // The 'daily' prop already contains the processed daily summary from the backend
+  // We can directly use it, slicing to ensure we only show 5 days if more are provided.
+  const dailyForecast = daily.slice(0, 5);
 
   return (
     <section className="space-y-8">
@@ -31,8 +17,8 @@ const Forecast = ({ hourly, daily }) => {
           {hourly.slice(0, 24).map((hour) => (
             <div key={hour.dt} className="flex-shrink-0 text-center bg-black/10 backdrop-blur-lg border border-white/10 p-4 rounded-2xl w-28">
               <p className="font-semibold">{new Date(hour.dt * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-              <img
-                src={`http://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
+              <img // Ensure HTTPS for icons
+                src={`https://openweathermap.org/img/wn/${hour.weather[0].icon}.png`}
                 alt={hour.weather[0].description}
                 className="w-12 h-12 mx-auto"
               />
@@ -50,8 +36,8 @@ const Forecast = ({ hourly, daily }) => {
             <div key={day.dt} className="flex items-center justify-between bg-black/10 backdrop-blur-lg border border-white/10 p-3 rounded-2xl">
               <p className="font-semibold w-1/4">{new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'long' })}</p>
               <div className="flex items-center w-1/4">
-                <img
-                  src={`http://openweathermap.org/img/wn/${day.weather.icon}.png`}
+                <img // Ensure HTTPS for icons
+                  src={`https://openweathermap.org/img/wn/${day.weather.icon}.png`}
                   alt={day.weather.description}
                   className="w-8 h-8 mr-2"
                 />
