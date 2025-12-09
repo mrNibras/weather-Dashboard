@@ -80,8 +80,8 @@ function App() {
   // Function to determine the background style based on weather
   const getBackgroundStyle = () => {
     if (!weatherData) return 'from-slate-800 to-gray-900'; // Default background
-    const weatherCondition = weatherData.current.weather[0].main;
-    const isNight = weatherData.current.dt > weatherData.current.sys.sunset || weatherData.current.dt < weatherData.current.sys.sunrise;
+    const weatherCondition = weatherData.weather[0].main;
+    const isNight = weatherData.dt > weatherData.sys.sunset || weatherData.dt < weatherData.sys.sunrise;
 
     if (isNight) return 'from-indigo-900 via-slate-900 to-gray-900';
 
@@ -106,7 +106,7 @@ function App() {
     <div className={`min-h-screen bg-gradient-to-br text-white flex flex-col items-center p-4 sm:p-6 lg:p-8 transition-all duration-1000 ${getBackgroundStyle()}`}>
       {/* Map as a living background layer */}
       <div className="absolute inset-0 z-0 opacity-20 blur-sm">
-        <WeatherMap coords={weatherData?.current?.coord} />
+        <WeatherMap coords={weatherData?.coord} />
       </div>
       
       <div className="relative z-10 w-full max-w-4xl">

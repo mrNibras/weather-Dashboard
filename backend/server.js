@@ -33,13 +33,22 @@ app.get('/api/weather', async (req, res) => {
     return res.status(400).json({ message: 'City or coordinates must be provided.' });
   }
 
-  // Using OpenWeatherMap API as an example. Adjust if you use a different service.
-  const baseURL = 'https://api.openweathermap.org/data/2.5/weather';
-  const params = city
-    ? { q: city, appid: apiKey, units: 'metric' }
-    : { lat, lon, appid: apiKey, units: 'metric' };
-
   try {
+    let lat_to_use = lat;
+    let lon_to_use = lon;
+
+    // If only a city is provided, we first need to geocode it to get coordinates
+    if (city) {
+      const geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct`;
+      const geocodeResponse = await axios.get(geocodeUrl, { params: { q: city, limit: 1, appid: apiKey } });
+      if (geocodeResponse.data.length === 0) {
+        return res.status(404).json({ message: 'City not found.' });
+      }
+      lat_to_use = geocodeResponse.data[0].lat;
+      lon_to_use = geocodeResponse.data[0].lon;
+    }
+    const baseURL = 'https://api.openweathermap.org/data/3.0/onecall';
+    const params = { lat: lat_to_use, lon: lon_to_use, appid: apiKey, units: 'metric', exclude: 'minutely,alerts' };
     const response = await axios.get(baseURL, { params });
     res.json(response.data);
   } catch (error) {
