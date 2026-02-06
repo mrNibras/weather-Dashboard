@@ -27,7 +27,7 @@ describe('SearchBar Component', () => {
     const input = screen.getByPlaceholderText('Search for a city...');
     fireEvent.change(input, { target: { value: 'London' } });
     
-    const form = screen.getByRole('form');
+    const form = screen.getByRole('textbox').closest('form');
     fireEvent.submit(form);
     
     expect(mockOnSearch).toHaveBeenCalledWith('London');
@@ -37,7 +37,7 @@ describe('SearchBar Component', () => {
     const mockOnSearch = jest.fn();
     render(<SearchBar onSearch={mockOnSearch} />);
     
-    const form = screen.getByRole('form');
+    const form = screen.getByRole('textbox').closest('form');
     fireEvent.submit(form);
     
     expect(mockOnSearch).not.toHaveBeenCalled();
@@ -50,7 +50,7 @@ describe('SearchBar Component', () => {
     const input = screen.getByPlaceholderText('Search for a city...');
     fireEvent.change(input, { target: { value: '  Tokyo  ' } });
     
-    const form = screen.getByRole('form');
+    const form = screen.getByRole('textbox').closest('form');
     fireEvent.submit(form);
     
     expect(mockOnSearch).toHaveBeenCalledWith('Tokyo');

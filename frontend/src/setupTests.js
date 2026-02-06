@@ -1,4 +1,4 @@
-import '@testing-library/jest-dom';
+require('@testing-library/jest-dom');
 
 // Mock the modules that might cause issues in testing environment
 jest.mock('lucide-react', () => ({

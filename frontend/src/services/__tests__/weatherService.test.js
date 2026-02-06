@@ -1,4 +1,4 @@
-import { getWeatherDataByCity, getWeatherDataByCoords } from '../services/weatherService';
+import { getWeatherDataByCity, getWeatherDataByCoords } from '../../services/weatherService';
 
 // Mock the global fetch function
 global.fetch = jest.fn();
