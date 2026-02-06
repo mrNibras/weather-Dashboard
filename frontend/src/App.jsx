@@ -20,9 +20,12 @@ function App() {
       navigator.geolocation.getCurrentPosition(
         async (position) => {
           const { latitude, longitude } = position.coords;
+          console.log(`Geolocation success: Lat ${latitude}, Lon ${longitude}`);
           try {
             const dataByCoords = await getWeatherDataByCoords(latitude, longitude);
             setWeatherData(dataByCoords);
+            // Store that the user has used location before
+            localStorage.setItem('hasUsedLocation', 'true');
           } catch (err) {
             console.error("Geolocation fetch error:", err);
             setError('Could not fetch weather for your location.');
@@ -30,18 +33,61 @@ function App() {
             setLoading(false);
           }
         },
-        () => {
-          setError('Location access denied. Search for a city manually.');
-          console.warn("Geolocation access denied by user.");
+        (error) => {
+          console.error("Geolocation error:", error);
+          let errorMessage = 'Location access denied or unavailable. Search for a city manually.';
+
+          // Provide more specific error messages based on error code
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorMessage = "Location access denied by user.";
+              // Remove the location usage flag if permission is denied
+              localStorage.removeItem('hasUsedLocation');
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorMessage = "Location information is unavailable.";
+              break;
+            case error.TIMEOUT:
+              errorMessage = "Location request timed out.";
+              break;
+            case error.UNKNOWN_ERROR:
+            default:
+              errorMessage = "An unknown error occurred while getting location.";
+              break;
+          }
+
+          setError(errorMessage);
           setLoading(false);
+        },
+        {
+          enableHighAccuracy: true,  // Enable high accuracy mode
+          timeout: 10000,           // 10 seconds timeout
+          maximumAge: 60000         // Accept cached position up to 1 minute old
         }
       );
+    } else {
+      setError('Geolocation is not supported by your browser.');
+      setLoading(false);
     }
   };
 
-  // Auto-detect location on initial load
+  // Only auto-detect location on initial load if we have permission or if it's a returning user
   useEffect(() => {
-    handleGeolocation();
+    // Check if geolocation is available and if user has previously allowed it
+    if (navigator.permissions) {
+      navigator.permissions.query({name: 'geolocation'}).then((result) => {
+        if (result.state === 'granted') {
+          handleGeolocation();
+        }
+      });
+    } else {
+      // Fallback for browsers that don't support permissions API
+      // Only try geolocation if we have recent location data or user has interacted before
+      const hasUsedLocationBefore = localStorage.getItem('hasUsedLocation') === 'true';
+      if (hasUsedLocationBefore) {
+        handleGeolocation();
+      }
+    }
   }, []);
 
   // Update localStorage when recent/favorite cities change
