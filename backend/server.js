@@ -112,6 +112,11 @@ app.get(/^(?!\/api).*/, (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`);
-});
+// Export the app for testing purposes
+if (process.env.NODE_ENV === 'test') {
+  module.exports = app;
+} else {
+  app.listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+  });
+}
