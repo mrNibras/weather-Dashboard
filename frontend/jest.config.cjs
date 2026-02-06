@@ -9,7 +9,7 @@ module.exports = {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   transformIgnorePatterns: [
-    '/node_modules/(?!(axios)/)',
+    '/node_modules/(?!(axios|react-leaflet|leaflet)/)',
   ],
   collectCoverageFrom: [
     'src/**/*.{js,jsx}',
